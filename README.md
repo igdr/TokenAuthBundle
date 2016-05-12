@@ -28,6 +28,7 @@ config.yml
                 Symfony\Component\Security\Core\User\UserInterface: Enadvance\Bundle\UserBundle\Entity\User
 
 securiry.yml
+
     security:
         firewalls:
             api_token_secured:
@@ -35,7 +36,6 @@ securiry.yml
                 stateless:    true
                 api_token: true
                 anonymous: true
-
 
 console:
     php app/console doctrine:schema:update --force
