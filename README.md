@@ -5,11 +5,7 @@ Installation
 
 Add the bundle to your `composer.json`:
 
-    "igdr/token-auth-bundle" : "dev-master"
-
-and run:
-
-    php composer.phar update
+    composer require igdr/token-auth-bundle
 
 Then add the IgdrEmployeeBundle to your application kernel:
 
