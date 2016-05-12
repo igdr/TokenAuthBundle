@@ -1,0 +1,18 @@
+{
+    "name": "igdr/token-auth-bundle",
+    "type": "symfony-bundle",
+    "description": "Token Auth Bundle",
+    "keywords": ["Igdr", "API", "Auth"],
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": ">=2.4",
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/doctrine-bundle": "~1.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "Igdr\\Bundle\\TokenAuthBundle": ""
+        }
+    },
+    "target-dir": "Igdr/Bundle/TokenAuthBundle"
+}

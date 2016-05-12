@@ -1,0 +1,10 @@
+framework:
+    secret: xxxxxxxxxx
+    csrf_protection:
+        enabled: true
+    validation:    { enabled: true, enable_annotations: true }
+    templating:    { engines: ['twig', 'php'] }
+
+twig:
+    debug:            %kernel.debug%
+    strict_variables: %kernel.debug%
