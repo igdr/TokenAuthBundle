@@ -1,4 +1,4 @@
-Igdr PHP Token Auth Bundle
+Token Auth Bundle
 ========================
 Installation
 ------------
@@ -13,7 +13,7 @@ and run:
 
 Then add the IgdrEmployeeBundle to your application kernel:
 
-    // app/IgdrKernel.php
+    // app/AppKernel.php
     public function registerBundles()
     {
         return array(
