@@ -26,7 +26,7 @@ class ClearCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('ciklum_token_auth_service_token')->cleanupToken();
+        $this->getContainer()->get('igdr_token_auth_service_token')->cleanupToken();
 
         $output->writeln('<info>Success</info>');
     }

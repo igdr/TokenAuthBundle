@@ -27,12 +27,12 @@ class AuthFactory implements SecurityFactoryInterface
     {
         $providerId = 'security.authentication.provider.api.'.$id;
         $container
-            ->setDefinition($providerId, new DefinitionDecorator('ciklum_token_auth_security_authentication_provider'))
+            ->setDefinition($providerId, new DefinitionDecorator('igdr_token_auth_security_authentication_provider'))
             ->replaceArgument(0, new Reference($userProvider))
             ->addArgument($config['lifetime']);
 
         $listenerId = 'security.authentication.listener.api.'.$id;
-        $container->setDefinition($listenerId, new DefinitionDecorator('ciklum_token_auth_security_authentication_listener'));
+        $container->setDefinition($listenerId, new DefinitionDecorator('igdr_token_auth_security_authentication_listener'));
 
         return array($providerId, $listenerId, $defaultEntryPoint);
     }

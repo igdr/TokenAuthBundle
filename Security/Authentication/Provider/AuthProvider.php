@@ -10,6 +10,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -62,39 +64,24 @@ class AuthProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token)
     {
-        $user = $token->getUser();
-        $hash = $token->getHash();
-
-        if (!$user instanceof UserInterface) {
-            /* @var $token \Igdr\Bundle\TokenAuthBundle\Security\Authentication\AuthToken */
-            if (strlen($hash) > 0) {
-                $user = $this->tokenService->verifyToken($hash);
-                if (!$user) {
-                    throw new UsernameNotFoundException('User with token '.$hash.' not found.');
-                }
-            } else {
-                $presentedPassword = $token->getCredentials();
-                if (!$presentedPassword) {
-                    throw new BadCredentialsException('The presented password cannot be empty.');
-                }
-                $user = $this->userProvider->loadUserByUsername($token->getUser());
-                if (!$this->encoderFactory->getEncoder($user)->isPasswordValid($user->getPassword(), $presentedPassword, $user->getSalt())) {
-                    throw new BadCredentialsException('The presented password is invalid.');
-                }
-
-                $hash = $this->tokenService->generateToken($user);
+        /* @var $token AuthToken */
+        if ($tokenUser = $this->tokenService->verifyToken($token->getHash())) {
+            $user = $this->userProvider->loadUserByUsername($tokenUser->getUsername());
+            if (!$user instanceof UserInterface) {
+                throw new AuthenticationServiceException('The user provider must return a UserInterface object.');
             }
+
+            $authenticatedToken = new AuthToken($user->getRoles());
+            $authenticatedToken->setUser($user);
+            $authenticatedToken->setHash($token->getHash());
+
+            //fire event
+            $this->eventDispatcher->dispatch(IgdrTokenAuth::ON_TOKEN_LOGIN, new TokenLoginEvent($authenticatedToken));
+
+            return $authenticatedToken;
         }
 
-        $authenticatedToken = new AuthToken($user->getRoles());
-        $authenticatedToken->setUser($user);
-        $authenticatedToken->setHash($hash);
-        $authenticatedToken->setAuthenticated(true);
-
-        //fire event
-        $this->eventDispatcher->dispatch(IgdrTokenAuth::ON_TOKEN_LOGIN, new TokenLoginEvent($authenticatedToken));
-
-        return $authenticatedToken;
+        throw new AuthenticationException('The token authentication failed.');
     }
 
     /**

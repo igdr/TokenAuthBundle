@@ -2,16 +2,16 @@ parameters:
     auth_token_expire: 30 #30 days
 
 services:
-    ciklum_token_auth_service_token:
+    igdr_token_auth_service_token:
         class: Igdr\Bundle\TokenAuthBundle\Service\TokenService
         arguments: ["@doctrine.orm.entity_manager", "%auth_token_expire%"]
 
-    ciklum_token_auth_security_authentication_provider:
+    igdr_token_auth_security_authentication_provider:
         class:  Igdr\Bundle\TokenAuthBundle\Security\Authentication\Provider\AuthProvider
-        arguments: ["", "@security.encoder_factory", "@ciklum_token_auth_service_token"]
+        arguments: ["", "@security.encoder_factory", "@igdr_token_auth_service_token"]
         calls:
             - [setEventDispatcher, ["@event_dispatcher"]]
 
-    ciklum_token_auth_security_authentication_listener:
+    igdr_token_auth_security_authentication_listener:
         class:  Igdr\Bundle\TokenAuthBundle\Security\Firewall\AuthListener
         arguments: ["@security.token_storage", "@security.authentication.manager", "@logger"]
