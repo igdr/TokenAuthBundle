@@ -25,7 +25,7 @@ config.yml
         orm:
             ....
             resolve_target_entities:
-                Symfony\Component\Security\Core\User\UserInterface: Enadvance\Bundle\UserBundle\Entity\User
+                Symfony\Component\Security\Core\User\UserInterface: App\Bundle\UserBundle\Entity\User
 
 securiry.yml
 
