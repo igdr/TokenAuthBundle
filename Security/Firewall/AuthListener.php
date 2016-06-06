@@ -3,6 +3,7 @@
 namespace Igdr\Bundle\TokenAuthBundle\Security\Firewall;
 
 use Igdr\Bundle\TokenAuthBundle\Security\Authentication\AuthToken;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -45,19 +46,34 @@ class AuthListener implements ListenerInterface
      */
     public function handle(GetResponseEvent $event)
     {
-        $request = $event->getRequest();
-        if ($request->headers->has('X-Auth-Token')) {
-            $tokenString = $request->headers->get('X-Auth-Token');
-            if ($tokenString) {
-                $token = new AuthToken();
-                $token->setHash($tokenString);
-                try {
-                    $authToken = $this->authManager->authenticate($token);
-                    $this->tokenStoreage->setToken($authToken);
-                } catch (AuthenticationException $e) {
-                    throw new AccessDeniedHttpException($e->getMessage());
-                }
+        $tokenString = $this->getTokenString($event->getRequest());
+        if ($tokenString) {
+            $token = new AuthToken();
+            $token->setHash($tokenString);
+            try {
+                $authToken = $this->authManager->authenticate($token);
+                $this->tokenStoreage->setToken($authToken);
+            } catch (AuthenticationException $e) {
+                throw new AccessDeniedHttpException($e->getMessage());
             }
         }
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return string
+     */
+    private function getTokenString(Request $request)
+    {
+        $tokenString = $request->headers->get('X-Auth-Token');
+        if (empty($tokenString)) {
+            $tokenString = $request->cookies->get('X-Auth-Token');
+        }
+        if (empty($tokenString)) {
+            $tokenString = $request->query->get('x_auth_token');
+        }
+
+        return $tokenString;
     }
 }
